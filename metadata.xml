@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+    <name>Curse experiment</name>
+    <directory>curse_experiment</directory>
+    <id>2501819286</id>
+    <description>A version of [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1125511770] Reversible Curses [/url] that is updated to work with Repentance.
+
+[h1] Original Description: [/h1]
+Small mod that lets you remove some curses through ingame actions.
+
+
+I Can See Forever! pill will now remove Curse of the Lost and Curse of the Blind from the floor.
+
+The Sun will now remove Curse of the Lost and Curse of Darkness from the floor.
+
+The World will now remove Curse of the Lost from the floor.
+
+Ansuz will now remove Curse of the Lost and Curse of the Blind from the floor.
+
+The Compass, Treasure Map, Blue Map, and The Mind will remove Curse of the Lost when you enter a new floor/room, every cache update, and when you use any pills, cards, or items (even modded ones!).
+
+Night Light will now remove Curse of Darkness. Inspired by [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1388197341]this mod[/url].
+
+Black Candle is now more effective at removing curses, removing them every time you enter a new floor/room, every cache update, and when you use any pills, cards, or items (even modded ones!).</description>
+    <version>1.2</version>
+    <visibility>Public</visibility>
+    <tag id="Lua"/>
+    <tag id="Tweaks"/>
+</metadata>

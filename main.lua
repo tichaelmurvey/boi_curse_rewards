@@ -2,36 +2,77 @@ Mod = RegisterMod("Curse Experiment", 1)
 if not CurseRewards then
 	CurseRewards = {}
 end
-
-local rewardTables = {}
-rewardTables[0] = {}
-
+print("mod loaded")
+local currentRewardTables = {}
 local RECOMMENDED_SHIFT_IDX = 35
 local game = Game()
 local seeds = game:GetSeeds()
 local startSeed = seeds:GetStartSeed()
 local rng = RNG()
 rng:SetSeed(startSeed, RECOMMENDED_SHIFT_IDX)
+
+-- add items to the reward table
+function Mod:addToPool (localTable, tableIndex,item,weight)
+	print("adding item to pool" .. item)
+	weight = weight or 1
+	if not localTable[tableIndex] then
+		localTable[tableIndex] = {}
+	end
+	if localTable[tableIndex] then
+		for i = 1,weight do
+			table.insert(localTable[tableIndex],item)
+		end
+	end
+end
+
+function Mod:definePools()
+	-- define table
+	local spawnPoolTables = {}
+	--darkness pool
+	Mod:addToPool(spawnPoolTables, 0,588,1)
+	Mod:addToPool(spawnPoolTables, 0,589,1)
+	Mod:addToPool(spawnPoolTables, 0,590,1)
+	print("pool defined " .. #spawnPoolTables[0])
+	return spawnPoolTables
+end
 ------------ Save Data stuff
-CurseRewards.SaveData = CurseRewards.SaveData or {}
-local JSON = include("json")
 
+local JSON = require("json")
+-- Load save data
 function Mod:LoadSaveData(save)
-  if Mod:HasData() and save then
-    CurseRewards.SaveData = JSON.decode(Mod:LoadData())
-  
-  elseif CurseRewards.SaveData == nil then
-    CurseRewards.SaveData = copytable(rewardTables)
- end
-
+	if save then
+		print("continuing run")
+		log("loading save data")
+		--Loading Moddata--
+		if Mod:HasData() then
+			print("found save data")
+			--local currentRewardTables = JSON.decode(Mod:LoadData())
+			print(Mod:LoadData())
+		end
+	else
+		print("starting new run")
+		log("creating save data")
+		print("creating save data")
+		currentRewardTables = Mod:definePools()
+		print("received pool ".. #currentRewardTables[0])
+		-- save save data
+		local jsonString = JSON.encode(currentRewardTables)
+		Mod:SaveData(jsonString)
+		print(jsonString)
+		log("saved initial data")
+		print("saved initial data")
+	end
 end
+Mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, Mod.LoadSaveData)
 
-Mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED,Mod.LoadSaveData)
-
-
+-- save save data
 function Mod:SaveDataOnExit ()
-  Mod:SaveData(JSON.encode(CurseRewards.SaveData))
-end
+	log("saving data")
+	print("saving data")
+	local jsonString = JSON.encode(currentRewardTables)
+	Mod:SaveData(jsonString)
+	print(jsonString)
+  end
 
 Mod:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT,Mod.SaveDataOnExit)
 Mod:AddCallback(ModCallbacks.MC_POST_GAME_END,Mod.SaveDataOnExit)
@@ -44,51 +85,27 @@ local function copytable (t1)
 	return result
 end
 
-function Mod:ResetPoolsOnNewRun (save)
-	if not save then
-	  CurseRewards.SaveData = copytable(rewardTables)
-	end
-end
-Mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, Mod.ResetPoolsOnNewRun)
-
--- add items to the reward table
-function Mod:addToPool (tableIndex,item,weight)
-	rewardTables = rewardTables or {}
-	--rewardTables[tableIndex] = rewardTables[tableIndex] or {}
-	weight = weight or 1
-	if rewardTables[tableIndex] then
-		for i = 1,weight do
-			table.insert(rewardTables[tableIndex],item)
-		end
-	end
-end
-
---add items to different reward tables
--- run on game start
-
-
---add items to the darkness pool
-Mod:addToPool(0,425,1)
-Mod:addToPool(0,588,1)
-
 -- choose item from reward table
 
 function Mod:PickItemFromPool(rngLocal,tableIndex)
+	print("picking item from pool")
 	rngLocal = rngLocal or RNG()
 	tableIndex = tableIndex or 0
-	local pool = CurseRewards.SaveData[tableIndex]
+	local pool = currentRewardTables[tableIndex]
 	local poolsize = #pool
 	local resulti = rng:RandomInt(poolsize) + 1
 	local result = pool[resulti]
 	-- remove item from pool
 	Mod:RemoveItemFromPool(tableIndex,result)
+	print("picked item from pool" .. result)
+	print("new pool size " .. #currentRewardTables[tableIndex])
 	return result
 end
 
 -- remove item from pool
 function Mod:RemoveItemFromPool(tableIndex,item)
 	tableIndex = tableIndex or 0
-	local pool = CurseRewards.SaveData[tableIndex]
+	local pool = currentRewardTables[tableIndex]
 	local poolsize = #pool
 	for i = 1,poolsize do
 		if pool[i] == item then
@@ -99,7 +116,8 @@ function Mod:RemoveItemFromPool(tableIndex,item)
 end
 
 -- give rewards on room clear
-function Mod:doSomething()
+function Mod:spawnReward()
+	print("spawning reward")
 	--check if room is boss room
 	local game = Game()
 	local level = game:GetLevel()
@@ -117,4 +135,4 @@ function Mod:doSomething()
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, Mod.doSomething)
+Mod:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, Mod.spawnReward)

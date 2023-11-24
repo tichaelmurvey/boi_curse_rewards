@@ -1,42 +1,113 @@
 Mod = RegisterMod("Curse Experiment", 1)
+if not CurseRewards then
+	CurseRewards = {}
+end
 
---function that removes curses based on what collectibles the players have
-function Mod:removeCursesByCollectibles()
-	local game = Game()
-	local level = game:GetLevel()
-	
-	for _, player in pairs(Mod.GetPlayers()) do
-		--black candle removes all curses
-		if player:HasCollectible(CollectibleType.COLLECTIBLE_BLACK_CANDLE) then
-			level:RemoveCurses(LevelCurse.CURSE_OF_DARKNESS | LevelCurse.CURSE_OF_THE_LOST | LevelCurse.CURSE_OF_THE_UNKNOWN | LevelCurse.CURSE_OF_THE_CURSED | LevelCurse.CURSE_OF_MAZE | LevelCurse.CURSE_OF_BLIND)
-			--level:RemoveCurse(LevelCurse.CURSE_OF_DARKNESS)
-			--level:RemoveCurse(LevelCurse.CURSE_OF_LABYRINTH) --cant remove labyrinth since that affects level generation
-			--level:RemoveCurse(LevelCurse.CURSE_OF_THE_LOST)
-			--level:RemoveCurse(LevelCurse.CURSE_OF_THE_UNKNOWN)
-			--level:RemoveCurse(LevelCurse.CURSE_OF_THE_CURSED) --cant remove cursed since that's part of a challenge
-			--level:RemoveCurse(LevelCurse.CURSE_OF_MAZE)
-			--level:RemoveCurse(LevelCurse.CURSE_OF_BLIND)
-		end
-			
-		--the compass, the treasure map, and the blue map removes curse of the lost/amnesia instantly
-		if player:HasCollectible(CollectibleType.COLLECTIBLE_COMPASS) or player:HasCollectible(CollectibleType.COLLECTIBLE_TREASURE_MAP) or player:HasCollectible(CollectibleType.COLLECTIBLE_BLUE_MAP) or player:HasCollectible(CollectibleType.COLLECTIBLE_MIND) then
-			level:RemoveCurses(LevelCurse.CURSE_OF_THE_LOST)
-		end
-			
-		--night light removes curse of darkness
-		if player:HasCollectible(CollectibleType.COLLECTIBLE_NIGHT_LIGHT) then
-			level:RemoveCurses(LevelCurse.CURSE_OF_DARKNESS)
+local rewardTables = {}
+rewardTables[0] = {}
+
+local RECOMMENDED_SHIFT_IDX = 35
+local game = Game()
+local seeds = game:GetSeeds()
+local startSeed = seeds:GetStartSeed()
+local rng = RNG()
+rng:SetSeed(startSeed, RECOMMENDED_SHIFT_IDX)
+------------ Save Data stuff
+CurseRewards.SaveData = CurseRewards.SaveData or {}
+local JSON = include("json")
+
+function Mod:LoadSaveData(save)
+  if Mod:HasData() and save then
+    CurseRewards.SaveData = JSON.decode(Mod:LoadData())
+  
+  elseif CurseRewards.SaveData == nil then
+    CurseRewards.SaveData = copytable(rewardTables)
+ end
+
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED,Mod.LoadSaveData)
+
+
+function Mod:SaveDataOnExit ()
+  Mod:SaveData(JSON.encode(CurseRewards.SaveData))
+end
+
+Mod:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT,Mod.SaveDataOnExit)
+Mod:AddCallback(ModCallbacks.MC_POST_GAME_END,Mod.SaveDataOnExit)
+
+local function copytable (t1)
+	local result = {}
+	for i,v in pairs(t1) do
+	  result[i] = v
+	end
+	return result
+end
+
+function Mod:ResetPoolsOnNewRun (save)
+	if not save then
+	  CurseRewards.SaveData = copytable(rewardTables)
+	end
+end
+Mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, Mod.ResetPoolsOnNewRun)
+
+-- add items to the reward table
+function Mod:addToPool (tableIndex,item,weight)
+	rewardTables = rewardTables or {}
+	--rewardTables[tableIndex] = rewardTables[tableIndex] or {}
+	weight = weight or 1
+	if rewardTables[tableIndex] then
+		for i = 1,weight do
+			table.insert(rewardTables[tableIndex],item)
 		end
 	end
 end
 
+--add items to different reward tables
+-- run on game start
+
+
+--add items to the darkness pool
+Mod:addToPool(0,425,1)
+Mod:addToPool(0,588,1)
+
+-- choose item from reward table
+
+function Mod:PickItemFromPool(rngLocal,tableIndex)
+	rngLocal = rngLocal or RNG()
+	tableIndex = tableIndex or 0
+	local pool = CurseRewards.SaveData[tableIndex]
+	local poolsize = #pool
+	local resulti = rng:RandomInt(poolsize) + 1
+	local result = pool[resulti]
+	-- remove item from pool
+	Mod:RemoveItemFromPool(tableIndex,result)
+	return result
+end
+
+-- remove item from pool
+function Mod:RemoveItemFromPool(tableIndex,item)
+	tableIndex = tableIndex or 0
+	local pool = CurseRewards.SaveData[tableIndex]
+	local poolsize = #pool
+	for i = 1,poolsize do
+		if pool[i] == item then
+			table.remove(pool,i)
+			break
+		end
+	end
+end
+
+-- give rewards on room clear
 function Mod:doSomething()
-	local player = Isaac.GetPlayer(0)
 	--check if room is boss room
 	local game = Game()
 	local level = game:GetLevel()
 	local room = level:GetCurrentRoom()
-	Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, game:GetItemPool():GetCollectible(ItemPoolType.POOL_TREASURE), Vector(320,280), Vector(0,0), nil);
+	local item = Mod:PickItemFromPool(rng,0)
+	-- spawn item
+	Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, item, Vector(320,280), Vector(0,0), nil);
+	--Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, game:GetItemPool():GetCollectible(ItemPoolType.POOL_TREASURE), Vector(320,280), Vector(0,0), nil);
 	--check if room is boss room
 	if room:GetType() == 5 then
 		-- check if player has curse of darkness

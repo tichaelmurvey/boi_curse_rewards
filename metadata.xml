@@ -1,28 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
-    <name>Curse experiment</name>
-    <directory>curse_experiment</directory>
+    <name>Curse Rewards</name>
+    <directory>curse_rewards</directory>
     <id>2501819286</id>
-    <description>A version of [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1125511770] Reversible Curses [/url] that is updated to work with Repentance.
+    <description>
+        Every time you complete a floor with a curse, you get a reward. The reward is based on the curse you completed.
 
-[h1] Original Description: [/h1]
-Small mod that lets you remove some curses through ingame actions.
+        Curse rewards operate on a rarity table from common to ultra rare.
 
+        Examples of curse rewards:
 
-I Can See Forever! pill will now remove Curse of the Lost and Curse of the Blind from the floor.
+        Curse of Darkness: The Sun, Night Light, Blanket
+        Curse of the Labrynth: Jera, Crooked Penny, Diplopia
+        Curse of the Lost: Ansuz, Compass, Cain's Eye
+        Curse of the Unknown: Red heart, Bloody Penny, Yum heart
+        Curse of the Maze: The Moon?, Teleport 2.0, Cracked orb
+        Curse of the Blind: Soul of Isaac, Options, Mystery Gift
 
-The Sun will now remove Curse of the Lost and Curse of Darkness from the floor.
-
-The World will now remove Curse of the Lost from the floor.
-
-Ansuz will now remove Curse of the Lost and Curse of the Blind from the floor.
-
-The Compass, Treasure Map, Blue Map, and The Mind will remove Curse of the Lost when you enter a new floor/room, every cache update, and when you use any pills, cards, or items (even modded ones!).
-
-Night Light will now remove Curse of Darkness. Inspired by [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1388197341]this mod[/url].
-
-Black Candle is now more effective at removing curses, removing them every time you enter a new floor/room, every cache update, and when you use any pills, cards, or items (even modded ones!).</description>
-    <version>1.2</version>
+        If you want to add a curse reward, please make a pull request on the github page.
+        https://github.com/tichaelmurvey/boi_curse_rewards.git
+    </description>
+    <version>1.0</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Tweaks"/>

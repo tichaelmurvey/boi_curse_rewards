@@ -1,4 +1,4 @@
-Mod = RegisterMod("Curse Experiment", 1)
+Mod = RegisterMod("Curse Rewards", 1)
 print("mod loaded")
 CurrentRewardTables = {}
 local RECOMMENDED_SHIFT_IDX = 35
@@ -72,7 +72,6 @@ function Mod:definePools()
 	Mod:addToPool(spawnPoolTables, DARKNESS, 101, TRINKET, RARE)-- Dim bulb
 	-- 1 labrynth pool (XL)
 	Mod:addToPool(spawnPoolTables, LABYRINTH, 580, ITEM, ULTRA_RARE) -- red key
-	Mod:addToPool(spawnPoolTables, LABYRINTH, 625, ITEM, ULTRA_RARE) -- Mega mush
 	Mod:addToPool(spawnPoolTables, LABYRINTH, 698, ITEM, ULTRA_RARE) -- Twisted pair
 	Mod:addToPool(spawnPoolTables, LABYRINTH, 347, ITEM, SUPER_RARE) -- Diplopia
 	Mod:addToPool(spawnPoolTables, LABYRINTH, 485, ITEM, RARE) -- Crooked penny
@@ -106,6 +105,7 @@ function Mod:definePools()
 	Mod:addToPool(spawnPoolTables, UNKNOWN, 5, HEART, COMMON) -- double heart
 	Mod:addToPool(spawnPoolTables, UNKNOWN, 573, ITEM, ULTRA_RARE) -- sacred heart
 	Mod:addToPool(spawnPoolTables, UNKNOWN, 639, ITEM, RARE) -- yuck heart
+	Mod:addToPool(spawnPoolTables, UNKNOWN, 45, ITEM, RARE) -- yum heart
 	Mod:addToPool(spawnPoolTables, UNKNOWN, 671, ITEM, RARE) -- candy heart
 	Mod:addToPool(spawnPoolTables, UNKNOWN, 694, ITEM, SUPER_RARE) -- broken heart
 	Mod:addToPool(spawnPoolTables, UNKNOWN, 724, ITEM, RARE) -- hypercoagulation
@@ -141,10 +141,11 @@ function Mod:definePools()
 	Mod:addToPool(spawnPoolTables, BLIND, 665, ITEM, ULTRA_RARE) -- Guppy's eye
 	Mod:addToPool(spawnPoolTables, BLIND, 249, ITEM, SUPER_RARE) -- Options
 	Mod:addToPool(spawnPoolTables, BLIND, 414, ITEM, SUPER_RARE) -- More options
+	Mod:addToPool(spawnPoolTables, BLIND, 515, ITEM, SUPER_RARE) -- gift
 	Mod:addToPool(spawnPoolTables, BLIND, 82, TRINKET, RARE) -- More options
 	Mod:addToPool(spawnPoolTables, BLIND, 723, ITEM, ULTRA_RARE) -- spindown
 	Mod:addToPool(spawnPoolTables, BLIND, 689, ITEM, ULTRA_RARE) -- glitched crown
-	Mod:addToPool(spawnPoolTables, BLIND, 49, CARD, COMMON) -- d6
+	Mod:addToPool(spawnPoolTables, BLIND, 49, CARD, COMMON) -- d6 fragment
 	Mod:addToPool(spawnPoolTables, BLIND, 37, CARD, COMMON) -- perthro
 	Mod:addToPool(spawnPoolTables, BLIND, 81, CARD, COMMON) -- soul of isaac
 	Mod:addToPool(spawnPoolTables, BLIND, 721, CARD, RARE) -- TM trainer
